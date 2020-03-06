@@ -33,7 +33,7 @@ $.getJSON("config.json")
             }
             httpRequest.onreadystatechange = alertContents;
 
-            let chat_id = config.chat_ids[1]
+            let chat_id = config.chat_ids[0]
 
             let request = BOT_URL + "/sendMessage?chat_id=" + chat_id + "&text=" + message;
             httpRequest.open("GET", request);
