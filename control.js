@@ -13,6 +13,14 @@ $.getJSON("config.json")
 
         let last_update_id = 0;
 
+        function appendInChat(text) {
+
+
+
+            $("#requestResponse").append(text + '<br>');
+
+        }
+
         function sendMessage(message) {
 
             var httpRequest;
@@ -24,13 +32,24 @@ $.getJSON("config.json")
                 return false;
             }
             httpRequest.onreadystatechange = alertContents;
-            httpRequest.open("GET", BOT_URL + "/sendMessage?chat_id=" + config.chat_id + "&text=" + message);
+
+            let chat_id = config.chat_ids[1]
+
+            let request = BOT_URL + "/sendMessage?chat_id=" + chat_id + "&text=" + message;
+            httpRequest.open("GET", request);
             httpRequest.send();
 
             function alertContents() {
                 if (httpRequest.readyState === XMLHttpRequest.DONE) {
                     if (httpRequest.status !== 200) {
                         alert("There was a problem with the request.");
+                        console.error(request);
+                    }
+                    else {
+
+
+                        appendInChat("sent to " + chat_id + " : " + message);
+
                     }
                 }
             }
@@ -42,6 +61,8 @@ $.getJSON("config.json")
             event.preventDefault();
 
             let msg = document.getElementById("textMessage").value;
+
+            $("#textMessage").val('');
 
             sendMessage(msg);
 
@@ -93,6 +114,8 @@ $.getJSON("config.json")
 
         async function pollUpdates(interval) {
 
+            console.log("polling update");
+
             let results = await getUpdate(interval);
 
             for (let result of results) {
@@ -103,7 +126,7 @@ $.getJSON("config.json")
 
                 let pretty = prettify(result.message);
 
-                $("#requestResponse").append(pretty + '<br>');
+                appendInChat(pretty);
 
             }
 
@@ -111,6 +134,6 @@ $.getJSON("config.json")
 
         }
 
-        pollUpdates(30);
+        pollUpdates(15);
 
     });
