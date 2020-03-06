@@ -130,10 +130,10 @@ $.getJSON("config.json")
 
             }
 
-            setTimeout(() => pollUpdates(interval), interval * 1000);
+            pollUpdates(interval);
 
         }
 
-        pollUpdates(15);
+        pollUpdates(60);
 
     });
