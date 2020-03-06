@@ -13,6 +13,23 @@ $.getJSON("config.json")
 
         let last_update_id = 0;
 
+        for (let chat_id of config.chat_ids) {
+
+            $("#chatIdSelector").append($("<option>").text(chat_id));
+
+        }
+
+        let form = document.getElementById("myForm");
+        function handleForm(event) { event.preventDefault(); }
+        form.addEventListener("submit", transferToBot);
+
+        $("#textMessage").keypress(function (e) {
+            console.log(e.which);
+            if (e.which == 13) {
+                transferToBot(e);
+            }
+        });
+
         function appendInChat(text) {
 
 
@@ -33,7 +50,7 @@ $.getJSON("config.json")
             }
             httpRequest.onreadystatechange = alertContents;
 
-            let chat_id = config.chat_ids[0]
+            let chat_id = $("#chatIdSelector option:selected").text();
 
             let request = BOT_URL + "/sendMessage?chat_id=" + chat_id + "&text=" + message;
             httpRequest.open("GET", request);
@@ -67,10 +84,6 @@ $.getJSON("config.json")
             sendMessage(msg);
 
         }
-
-        let form = document.getElementById("myForm");
-        function handleForm(event) { event.preventDefault(); }
-        form.addEventListener("submit", transferToBot);
 
 
         function prettify(message) {
