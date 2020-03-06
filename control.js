@@ -11,6 +11,8 @@ $.getJSON("config.json")
 
         const BOT_URL = config.telegram_api_url + config.bot_token;
 
+        let last_update_id = 0;
+
         function sendMessage(message) {
 
             var httpRequest;
@@ -27,9 +29,7 @@ $.getJSON("config.json")
 
             function alertContents() {
                 if (httpRequest.readyState === XMLHttpRequest.DONE) {
-                    if (httpRequest.status === 200) {
-                        $("#requestResponse").text(httpRequest.responseText);
-                    } else {
+                    if (httpRequest.status !== 200) {
                         alert("There was a problem with the request.");
                     }
                 }
@@ -68,11 +68,16 @@ $.getJSON("config.json")
 
         }
 
-        async function getUpdate() {
+        async function getUpdate(timeout) {
 
             try {
 
-                let data = await $.get(BOT_URL + "/getUpdates");
+                let data = await $.get(BOT_URL + "/getUpdates",
+                    {
+                        offset: (last_update_id + 1),
+                        timeout: timeout
+                    }
+                );
                 return data.result;
 
             }
@@ -88,20 +93,24 @@ $.getJSON("config.json")
 
         async function pollUpdates(interval) {
 
-            let results = await getUpdate();
+            let results = await getUpdate(interval);
 
             for (let result of results) {
 
+                console.log(result);
+
+                last_update_id = result.update_id;
+
                 let pretty = prettify(result.message);
 
-                console.log(pretty);
+                $("#requestResponse").append(pretty + '<br>');
 
             }
 
-            // setTimeout(() => pollUpdates(interval), interval * 1000);
+            setTimeout(() => pollUpdates(interval), interval * 1000);
 
         }
 
-        pollUpdates(8);
+        pollUpdates(30);
 
     });
