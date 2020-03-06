@@ -68,25 +68,23 @@ $.getJSON("config.json")
 
         }
 
-        function getUpdate() {
+        async function getUpdate() {
 
-            return new Promise((resolve, reject) => {
-                $.get(BOT_URL + "/getUpdates", function () {
+            try {
 
-                })
-                    .done(function (data) {
+                let data = await $.get(BOT_URL + "/getUpdates");
+                return data.result;
 
-                        let results = data.result;
+            }
+            catch (e) {
 
-                        resolve(results);
-                    })
-                    .fail(function () {
-                        alert("error");
-                    });
+                console.log(e);
+                alert("error, see console");
 
-            });
+            }
 
         }
+
 
         async function pollUpdates(interval) {
 
