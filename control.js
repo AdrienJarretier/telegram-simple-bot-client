@@ -54,35 +54,56 @@ $.getJSON("config.json")
 
         function prettify(message) {
 
+            let sender = {
 
+                fn: message.from.first_name,
+                ln: message.from.last_name
+
+            }
+
+            let date = message.date;
+            let text = message.text;
+
+            return date + " " + sender.fn + " " + sender.ln + " : " + text;
 
         }
 
-        $.get(BOT_URL + "/getUpdates", function (data) {
+        function getUpdate() {
 
-        })
-            .done(function (data) {
+            return new Promise((resolve, reject) => {
+                $.get(BOT_URL + "/getUpdates", function () {
 
-                let results = data.result;
+                })
+                    .done(function (data) {
 
-                for (let result of results) {
+                        let results = data.result;
 
-                    let message = result.message;
+                        resolve(results);
+                    })
+                    .fail(function () {
+                        alert("error");
+                    });
 
-                    message.from.first_name;
-                    message.from.last_name;
-                    message.date;
-                    message.text;
-
-                    console.log(message);
-
-                }
-
-                $("#requestResponse").text(results);
-            })
-            .fail(function () {
-                alert("error");
             });
 
+        }
+
+        async function pollUpdates(interval) {
+
+            let results = await getUpdate();
+
+            for (let result of results) {
+
+                let pretty = prettify(result.message);
+
+                console.log(pretty);
+
+            }
+
+            // setTimeout(() => pollUpdates(interval), interval * 1000);
+
+        }
+
+        pollUpdates(8);
 
     });
